@@ -1,8 +1,10 @@
 import time
+
 from chimera.instruments.dome import DomeBase
-from chimera_swope.instruments.swopebase import SwopeBase
-from swope.tcs.swope_tcs import SwopeDomeShutter
 from chimera.interfaces.dome import Mode
+from swope.tcs.swope_tcs import SwopeDomeShutter
+
+from chimera_swope.instruments.swopebase import SwopeBase
 
 
 class SwopeDome(DomeBase, SwopeBase):

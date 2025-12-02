@@ -1,4 +1,5 @@
 from chimera.instruments.lamp import LampBase
+
 from chimera_swope.instruments.swopebase import SwopeBase
 
 

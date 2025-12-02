@@ -1,4 +1,3 @@
-from time import time
 from chimera.instruments.fan import FanBase
 
 from chimera_swope.instruments.swopebase import SwopeBase

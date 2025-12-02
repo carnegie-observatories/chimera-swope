@@ -1,0 +1,30 @@
+{
+  "template": "https://github.com/astroufsc/chimera-template",
+  "commit": "a087313d72e598e0356e4e581828c9664ece2a34",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "Chimera Swope",
+      "project_slug": "chimera-swope",
+      "package_name": "chimera_swope",
+      "__module_name": "swope",
+      "project_short_description": "Swope Telescope and Instruments chimera plugin",
+      "author_name": "William Schoenell",
+      "author_email": "wschoenell@gmail.com",
+      "github_username": "wschoenell",
+      "version": "0.1.0",
+      "license": "MIT",
+      "python_version": "3.13",
+      "include_instrument": "no",
+      "include_controller": "no",
+      "__instrument_class_name": "SwopeInstrument",
+      "__controller_class_name": "SwopeController",
+      "__instrument_module_name": "swopeinstrument",
+      "__controller_module_name": "swopecontroller",
+      "year": "2025",
+      "_template": "https://github.com/astroufsc/chimera-template",
+      "_commit": "a087313d72e598e0356e4e581828c9664ece2a34"
+    }
+  },
+  "directory": null
+}

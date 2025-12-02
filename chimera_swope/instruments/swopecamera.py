@@ -1,18 +1,18 @@
+import datetime as dt
+import os
+import time
+
+from astropy.io import fits
+from chimera.controllers.imageserver.imagerequest import ImageRequest
 from chimera.instruments.camera import CameraBase
 from chimera.instruments.filterwheel import FilterWheelBase
+from chimera.interfaces.camera import CameraStatus, ReadoutMode
 from henrietta.swope_ccd import SwopeCCD
-from chimera.interfaces.camera import ReadoutMode
-from chimera.interfaces.camera import CameraStatus
-from chimera.controllers.imageserver.imagerequest import ImageRequest
+
 from chimera_swope.instruments.util import concatenate_quad_arrays
-from astropy.io import fits
-import datetime as dt
-import time
-import os
 
 
 class SwopeCamera(CameraBase, FilterWheelBase):
-
     __config__ = {
         "swope_ccd_host": "127.0.0.1",
         "swope_ccd_port": 51911,

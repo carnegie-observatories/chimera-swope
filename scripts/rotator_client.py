@@ -1,24 +1,23 @@
 import asyncio
-import copy
 import random
 import time
-import urllib
-from nicegui import Event, run, ui, app
-from nicegui.events import ValueChangeEventArguments
-from nicegui.events import KeyEventArguments
-from nicegui.events import UploadEventArguments
+from concurrent.futures.thread import ThreadPoolExecutor
+
+from chimera.core.bus import Bus
 from chimera.core.proxy import Proxy
 from chimera.interfaces.telescope import Telescope
 from chimera.util.coord import Coord
-from chimera.core.bus import Bus
-
-from concurrent.futures.thread import ThreadPoolExecutor
+from nicegui import Event, app, run, ui
+from nicegui.events import (
+    KeyEventArguments,
+    UploadEventArguments,
+    ValueChangeEventArguments,
+)
 
 print("Starting rotator client...")
 
 
 class ToggleButton(ui.button):
-
     def __init__(self, *args, keyboard=None, **kwargs) -> None:
         self._state = False
         self.keyboard = keyboard
@@ -43,8 +42,8 @@ class UiData:
     offset_pa: float = 0.0
     current_ra: float = 0.0
     current_dec: float = 0.0
-    current_ra_str: str = 0.0
-    current_dec_str: str = 0.0
+    current_ra_str: str = ""
+    current_dec_str: str = ""
     current_focus: float = 0.0
     target_focus: float = 0.0
     current_rotator: float = 0.0
@@ -64,8 +63,6 @@ class UiData:
         self.telescope_proxy.ping()
         self.telescope_proxy.slew_complete += self.tel_slew_complete
         self.focuser_proxy = Proxy("tcp://127.0.0.1:6379/SwopeFocuser/focus", bus)
-        self.focuser_proxy = Proxy("tcp://127.0.0.1:6379/SwopeFocuser/focus", bus)
-        self.focuser_proxy = Proxy("tcp://127.0.0.1:6379/SwopeFocuser/focus", bus)
         self.focuser_proxy.ping()
         self.focus_min, self.focus_max = self.focuser_proxy.get_range()
         print("Focuser range:", self.focus_min, self.focus_max)
@@ -84,7 +81,6 @@ class UiData:
         self.focus_min = 0
         self.focus_max = 1
 
-    # # from CLI
     # def _start_system(self, options: optparse.Values):
     #     self.config = ChimeraConfig.from_file(options.config)
     #     random_port = random.randint(10000, 60000)
@@ -135,10 +131,11 @@ class UiData:
         self.current_ra_str = Coord.from_d(float(self.current_ra)).strfcoord()
         self.current_dec_str = Coord.from_d(float(self.current_dec)).strfcoord()
 
-    def update_focus(self):
-        self.current_focus = 12000  # self.focuser_proxy.get_position()
+    # def update_focus(self):
+    #     self.current_focus = 12000  # self.focuser_proxy.get_position()
 
-    def update_rotator(self):
+    def update_focus(self):
+        self.current_focus = self.focuser_proxy.get_position()
         self.current_rotator = self.rotator_proxy.get_position()
         self.current_pa = f"{self.current_rotator:.3f}º"
 
@@ -178,8 +175,12 @@ class UiData:
     @staticmethod
     def get_display_proxy_pa(detect_stars=True):
         try:
-            display_proxy = Proxy("127.0.0.1:6379/Ds9AutoDisplay/display")
+            global bus
+            display_proxy = Proxy("127.0.0.1:6379/Ds9AutoDisplay/display", bus)
             print(display_proxy.get_pa(detect_stars=detect_stars))
+        except Exception as e:
+            ui.notify(f"Error getting PA from DS9: {e}")
+            return
         except Exception as e:
             ui.notify(f"Error getting PA from DS9: {e}")
             return
@@ -247,7 +248,7 @@ class UiData:
 
     async def upload_sched_file(self, e: UploadEventArguments):
         ui.notify(f"Uploaded {e.file.name}")
-        await e.file.save(f"/tmp/sched.yaml")  # fixme
+        await e.file.save("/tmp/sched.yaml")  # fixme
 
     def tweet_handler(self, message: str):
         self.audio.play()
@@ -287,7 +288,6 @@ class UiData:
 
         with ui.tab_panels(tabs, value="Telescope", animated=False).classes("w-full"):
             with ui.tab_panel("Telescope"):
-
                 with ui.grid(columns=3):
                     with ui.column():
                         ui.input("Telescope RA:").bind_value(
@@ -315,11 +315,10 @@ class UiData:
                             ui.button("N", on_click=self.offset_north_btn)
                             ui.label()
                             ui.button("E", on_click=self.offset_east_btn)
-                            but = ToggleButton("K", keyboard=keyboard)
+                            ToggleButton("K", keyboard=keyboard)
                             print("Keyboard active:", keyboard.active)
                             ui.button("W", on_click=self.offset_west_btn)
                             ui.label()
-                            ui.button("S", on_click=self.offset_south_btn)
                     with ui.column():
                         self.show_aladin()
                 # with ui.row(align_items="center"):
@@ -396,13 +395,15 @@ class UiData:
         ui.add_body_html(
             "<script src='https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js' charset='utf-8'></script>"
         )
-        # ui.add_body_html("<div id='aladin-lite-div' style='width: 400px; height: 400px;'></div>")
-        with (
+        aladin_div = (
             ui.element("div")
             .props('id="aladin-lite-div"')
-            .style("width: 400px; height: 400px;") as self.aladin
-        ):
-            self.update_aladin()
+            .style("width: 400px; height: 400px;")
+        )
+        self.aladin = aladin_div
+        self.update_aladin()
+        ui.button("Update", on_click=self.update_aladin)
+        return aladin_div
         ui.button("Update", on_click=self.update_aladin)
 
     def update_aladin(self, ra=None, dec=None, draw_footprint=False):

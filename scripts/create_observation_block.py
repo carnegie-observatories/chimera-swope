@@ -1,7 +1,6 @@
 import jinja2
-import os
 
-with open("observing_sequence.j2", "r") as f:
+with open("observing_sequence.j2") as f:
     template_content = f.read()
 
 template = jinja2.Template(template_content)

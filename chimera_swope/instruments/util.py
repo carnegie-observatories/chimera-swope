@@ -1,5 +1,4 @@
 import numpy as np
-from astropy.io import fits
 
 
 def concatenate_quad_arrays(

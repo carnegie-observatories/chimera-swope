@@ -1,16 +1,15 @@
 # This is an example of an simple instrument.
 
-from chimera.core.chimeraobject import ChimeraObject
-from astropy.samp import SAMPIntegratedClient
-from astropy.samp import SAMPHubError
-from chimera.interfaces.camera import CameraStatus
-from chimera.core.event import event
+import numpy as np
 
 # todo: move to another class
 from astropy.io import fits
+from astropy.samp import SAMPHubError, SAMPIntegratedClient
 from astropy.stats import sigma_clipped_stats
+from chimera.core.chimeraobject import ChimeraObject
+from chimera.core.event import event
+from chimera.interfaces.camera import CameraStatus
 from photutils.detection import DAOStarFinder
-import numpy as np
 
 # todo: move to another class
 
@@ -43,7 +42,6 @@ class Ds9AutoDisplay(ChimeraObject):
             return False
 
     def __start__(self):
-
         def ds9_clbk(image, status):
             if status != CameraStatus.OK:
                 return
@@ -63,7 +61,6 @@ class Ds9AutoDisplay(ChimeraObject):
         cam.readout_complete += ds9_clbk
 
     def get_pa(self, detect_stars=True):
-
         if not self.connect_ds9():
             self.log.error("Cannot get PA: not connected to DS9")
             return

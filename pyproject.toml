@@ -1,7 +1,7 @@
 [project]
 name = "chimera-swope"
 version = "0.1.0"
-description = "Template for chimera plugins"
+description = "Swope Telescope and Instruments chimera plugin"
 license = "GPL-2.0-or-later"
 authors = [
     { name = "William Schoenell", email = "wschoenell@gmail.com" },
@@ -18,11 +18,16 @@ dependencies = [
     "pywebview>=6.0",
     "swope",
 ]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["chimera_swope"]
+
 [tool.ruff.lint]
-select = ["N802", "N803"]
+select = ["N", "I", "UP", "F"]
 
 [tool.ruff.lint.flake8-copyright]
 notice-rgx = "(?i)# SPDX-FileCopyrightText:\\s\\d{4}(-(\\d{4}|present))*"

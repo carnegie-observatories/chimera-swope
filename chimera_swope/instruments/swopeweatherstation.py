@@ -1,17 +1,18 @@
 import json
 import math
-import urllib.request
 import urllib.error
-from datetime import datetime, timedelta, timezone
+import urllib.request
+from datetime import UTC, datetime, timedelta
 from time import time
+
 from chimera.instruments.weatherstation import WeatherStationBase
 from chimera.interfaces.weatherstation import (
-    WeatherTemperature,
-    WeatherWind,
-    WeatherPressure,
     WeatherHumidity,
+    WeatherPressure,
     WeatherRain,
     WeatherSeeing,
+    WeatherTemperature,
+    WeatherWind,
 )
 
 # N 	V 	field 	format
@@ -340,9 +341,7 @@ class SwopeWeatherStation(
         # Fetch fresh data from API
         try:
             # Create start time for the requested time window
-            start_time = datetime.now(timezone.utc) - timedelta(
-                minutes=time_window_minutes
-            )
+            start_time = datetime.now(UTC) - timedelta(minutes=time_window_minutes)
             start_ts = start_time.strftime("%Y-%m-%dT%H:%M:%S")
 
             # Build URL with time parameter

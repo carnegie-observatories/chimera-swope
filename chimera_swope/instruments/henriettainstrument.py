@@ -1,17 +1,15 @@
+import datetime
 import os
+
+from astropy.io import fits
+from chimera.controllers.imageserver.imagerequest import ImageRequest
+from chimera.controllers.imageserver.util import get_image_server
+from chimera.core.chimeraobject import ChimeraObject
 from chimera.instruments.camera import CameraBase
 from chimera.instruments.filterwheel import FilterWheelBase
-from chimera.core.chimeraobject import ChimeraObject
-from henrietta.henrietta import Henrietta
-from chimera.core.proxy import Proxy
-from chimera.controllers.imageserver.imagerequest import ImageRequest
-from chimera.interfaces.camera import CameraStatus
-from chimera.interfaces.camera import CameraFeature
-from astropy.io import fits
-import datetime
+from chimera.interfaces.camera import CameraFeature, CameraStatus
 from chimera.util.image import Image
-from chimera.controllers.imageserver.util import get_image_server
-from chimera.core.lock import lock
+from henrietta.henrietta import Henrietta
 
 
 class HenriettaBase(Henrietta, ChimeraObject):
@@ -26,7 +24,6 @@ class HenriettaBase(Henrietta, ChimeraObject):
 
 
 class HenriettaWheel(FilterWheelBase):
-
     __config__ = {
         "henrietta": "127.0.0.1:6379/HenriettaBase/henrietta",
         "filters_gui": "",
@@ -97,7 +94,6 @@ class HenriettaSlideWheel(HenriettaWheel):
 
 
 class HenriettaCamera(CameraBase):
-
     __config__ = {
         "henrietta": "127.0.0.1:6379/HenriettaBase/henrietta",
         "fits_link": os.path.expanduser("~/hen.fits"),
@@ -152,7 +148,6 @@ class HenriettaCamera(CameraBase):
         return 0.0
 
     def _save_image(self, image_request, image_data, extras=None):
-
         if extras is not None:
             self.extra_header_info.update(extras)
 
@@ -171,7 +166,7 @@ class HenriettaCamera(CameraBase):
 
     def _readout(self, image_request: ImageRequest):
         self.readout_begin(image_request)
-        binning = image_request["binning"]
+        # binning = image_request["binning"]
 
         out_fname = os.path.expanduser(self["fits_link"])
 
@@ -192,7 +187,7 @@ class HenriettaCamera(CameraBase):
         return proxy
 
     def _expose(self, request: ImageRequest):
-        self.__last_frame_start = datetime.datetime.now(datetime.timezone.utc)
+        self.__last_frame_start = datetime.datetime.now(datetime.UTC)
         status = CameraStatus.OK
         print("Request:", request)
         self.henrietta.expose(request["exptime"])

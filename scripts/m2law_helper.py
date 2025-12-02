@@ -1,8 +1,8 @@
-# coding=utf-8
-import os
 import datetime
-import numpy as np
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 plt.ion()
 from astropy.io import fits
@@ -37,6 +37,7 @@ use_mac_clipboard = (
 obs_lat = "-30:10:04.31"
 obs_long = "-70:48:20.48"
 obs_elev = 2187
+chimera_prefix = ""
 
 star_catalogfile = "SAO.edb"
 # star_catalogfile = 'NGC.edb'
@@ -125,7 +126,7 @@ if plot:
             s=20,
         )
         # ax.scatter(skip_too_close[:, 0] * np.pi / 180., 90 - skip_too_close[:, 1], color='black', s=20)
-        print("Skip %d" % len(skip_too_close))
+        print(f"Skip {len(skip_too_close)}")
     ax.grid(True)
     ax.set_ylim(90 - altitude_min + 10, 0)
     ax.set_yticklabels(90 - np.array(ax.get_yticks(), dtype=int))
@@ -138,25 +139,23 @@ if save_file_pointings is not None:
 if save_file_done is not None:
     file_pointings = open(save_file_done, "a+")
     file_pointings.write(
-        "# Measurements below initiated on %s\n# azimuth (deg)    altitude (deg)\n"
-        % datetime.datetime.utcnow().strftime("%Y%m%d %H:%M:%S UTC")
+        f"# Measurements below initiated on {datetime.datetime.utcnow().strftime('%Y%m%d %H:%M:%S UTC')}\n# azimuth (deg)    altitude (deg)\n"
     )
 
 i = skip
 for point in map_points[skip:]:
     i += 1
     alt, az = point[1], point[0]
-    print("Point: # %i (alt, az): %.2f %2f" % (i, alt, az))
+    print(f"Point: # {i} (alt, az): {alt:.2f} {az:.2f}")
     # If a star name is needed to the method of pointing model, get the nearest star from the desired point.
     if use_starname:
         star, distance = get_nearby_star(
             star_catalog, alt * np.pi / 180, az * np.pi / 180
         )
         alt, az = star.alt.real * 180 / np.pi, star.az.real * 180 / np.pi
-        os.system("echo %s | pbcopy" % star.name)
+        os.system(f"echo {star.name} | pbcopy")
         s = input(
-            "Point Telescope to star %s (alt, az, dist): %s, %s, %.2f and press ENTER to verify S to skip. E to exit."
-            % (star.name, star.alt, star.az, distance)
+            f"Point Telescope to star {star.name} (alt, az, dist): {star.alt}, {star.az}, {distance:.2f} and press ENTER to verify S to skip. E to exit."
         )
         if s == "S":
             continue
@@ -164,23 +163,21 @@ for point in map_points[skip:]:
             break
     else:
         print("Pointing telescope...")
-        os.system(
-            "%s chimera-tel --slew --alt %.2f --az %2.f" % (chimera_prefix, alt, az)
-        )
+        os.system(f"{chimera_prefix} chimera-tel --slew --alt {alt:.2f} --az {az:.2f}")
     if plot:
         ax.scatter(point[0] * np.pi / 180, 90 - point[1], color="b", s=10)
-        ax.set_title("%d of %d done" % (i - 1, pointings), va="bottom")
+        ax.set_title(f"{i - 1} of {pointings} done", va="bottom")
         plt.draw()
     print("Verifying pointing...")
     print("chimera-pverify --here")
-    os.system("%s chimera-pverify --here" % chimera_prefix)
+    os.system(f"{chimera_prefix} chimera-pverify --here")
     print("\a")  # Ring a bell when done.
     if save_file_done is not None:
         s = input(
             "Type N if this pointing was not okay or ENTER for the next pointing."
         )
         if s.lower() != "n":
-            file_pointings.write("%s    %s\n" % (az, alt))
+            file_pointings.write(f"{az}    {alt}\n")
     else:
         input("Press ENTER for next pointing.")
 

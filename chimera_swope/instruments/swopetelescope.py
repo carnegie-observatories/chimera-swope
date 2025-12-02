@@ -1,7 +1,8 @@
 import time
+
+from chimera.instruments.fan import FanBase
 from chimera.instruments.telescope import TelescopeBase
 from chimera.interfaces.telescope import TelescopeStatus
-from chimera.instruments.fan import FanBase
 
 from chimera_swope.instruments.swopebase import SwopeBase
 
@@ -96,9 +97,6 @@ class SwopeTelescope(TelescopeBase, FanBase, SwopeBase):
 
     def abort_slew(self):
         self.tcs.set_slew_stop()
-
-    def is_slewing(self):
-        return self.status["Slewing"]
 
     # TD def get_target_ra_dec(self):
     # TD def get_target_alt_az(self):

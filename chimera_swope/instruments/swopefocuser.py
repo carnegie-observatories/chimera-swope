@@ -1,6 +1,5 @@
-from chimera.interfaces.focuser import FocuserAxis
 from chimera.instruments.focuser import FocuserBase
-from chimera.interfaces.focuser import InvalidFocusPositionException
+from chimera.interfaces.focuser import FocuserAxis, InvalidFocusPositionException
 
 from chimera_swope.instruments.swopebase import SwopeBase
 

@@ -1,9 +1,9 @@
 from time import time
-from swope.tcs.swope_tcs import SwopeTCS, SwopeDomeShutter, SwopeScreenPos, SwopeFocuser
+
+from swope.tcs.swope_tcs import SwopeTCS
 
 
 class SwopeBase:
-
     def __init__(self):
         self.tcs: SwopeTCS | None = None
         self._status: dict | None = None

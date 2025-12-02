@@ -1,69 +1,100 @@
-chimera-template plugin
-=======================
+# Chimera Swope
 
-This is a template plugin for the chimera observatory control system
-https://github.com/astroufsc/chimera.
+Swope Telescope and Instruments chimera plugin
 
-Usage
------
+This is a plugin for the [Chimera observatory control system](https://github.com/astroufsc/chimera).
 
-Rename chimera_template for your plugin name. It is important that the plugin
-name must start with chimera\_ to be found by chimera. Instruments and
-controllers must follow the standard ``chimera_(plugin_name)/(instruments|controllers)/(plugin).py``
+## Overview
 
-The class inside ``(plugin).py`` should be named Plugin (with CamelCase letters).
+The chimera-swope plugin provides comprehensive control interfaces for the Henrietta Swope 1.0-meter telescope 
+at Las Campanas Observatory, including both Swope and Henrietta instrument systems.
 
-For more info: https://github.com/astroufsc/chimera/blob/master/docs/site/chimerafordevs.rst#chimera-objects
+## Installation
 
+```bash
+pip install -U chimera_swope
+```
 
-Installation
-------------
+Or install from source:
 
-Installation instructions. Dependencies, etc...
+```bash
+git clone https://github.com/carnegie-observatories/chimera-swope.git
+cd chimera-swope
+uv sync
+```
 
-::
+## Configuration Example
 
-   pip install -U chimera_template
+Add the following to your `chimera.config` file:
 
-or
+```yaml
+telescope:
+        name: swope
+        type: SwopeTelescope
+        tcs_host: 10.8.80.53
+        aperture: 1000.0  # mm
+        focal_length: 7000.0  # mm
 
-::
+    camera:
+        name: swopecam
+        type: SwopeCamera
+        swope_ccd_host: 127.0.0.1
+        swope_ccd_port: 51911
 
-    pip install -U git+https://github.com/astroufsc/chimera-template.git
+    dome:
+        name: dome
+        type: SwopeDome
 
+    focuser:
+        name: focuser
+        type: SwopeFocuser
 
-Configuration Example
----------------------
+    weatherstation:
+        name: weather
+        type: SwopeWeatherStation
+```
 
-Here goes an example of the configuration to be added on ``chimera.config`` file.
+## Development
 
-::
+### Setup Development Environment
 
-    instrument:
-        name: model
-        type: Example
+```bash
+# Clone the repository
+git clone https://github.com/carnegie-observatories/chimera-swope.git
+cd chimera-swope
 
+# Install dependencies
+uv sync
 
-Tested Hardware (for instruments)
----------------------------------
+# Install pre-commit hooks
+uv run pre-commit install --install-hooks
+```
 
-This plugin was tested on these hardware:
+### Code Quality
 
-* Hardware example 1, model 2
-* Hardware example 2, model 3
+This project uses:
+- [Ruff](https://docs.astral.sh/ruff/) for linting and formatting
+- [pre-commit](https://pre-commit.com/) for automated checks
 
+```bash
+# Run linter
+uv run ruff check
 
-Contact
--------
+# Run formatter
+uv run ruff format
+
+# Run all pre-commit hooks
+uv run pre-commit run --all-files
+```
+
+## License
+
+GPL-2.0-or-later
+
+## Contact
 
 For more information, contact us on chimera's discussion list:
 https://groups.google.com/forum/#!forum/chimera-discuss
 
 Bug reports and patches are welcome and can be sent over our GitHub page:
-https://github.com/astroufsc/chimera-template/
-
-
-
-Swope     26003 obs1   15u  IPv4 0xac6c64aa1d44de8b      0t0  TCP 10.8.80.8:51896->10.8.80.103:51203 (ESTABLISHED)
-GALIL (swope-imb) Swope     26003 obs1   20u  IPv4 0xac6c64aa1917f52b      0t0  TCP 10.8.80.8:51897->10.8.80.60:2003 (ESTABLISHED)
-TCS Swope     26003 obs1   21u  IPv4 0xac6c64aa0ed8490b      0t0  TCP 10.8.80.8:51900->10.8.80.53:50000 (ESTABLISHED)
+https://github.com/carnegie-observatories/chimera-swope
