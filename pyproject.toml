@@ -2,7 +2,7 @@
 name = "chimera-swope"
 version = "0.1.0"
 description = "Swope Telescope and Instruments chimera plugin"
-license = "GPL-2.0-or-later"
+license = "MIT"
 authors = [
     { name = "William Schoenell", email = "wschoenell@gmail.com" },
     { name = "Paulo Henrique Silva", email = "ph.silva@gmail.com" },

@@ -89,7 +89,7 @@ uv run pre-commit run --all-files
 
 ## License
 
-GPL-2.0-or-later
+MIT
 
 ## Contact
 
